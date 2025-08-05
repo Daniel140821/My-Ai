@@ -8,25 +8,77 @@
 import SwiftUI
 
 struct ContentView: View {
-    let apiKey = "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"
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var question: String = ""
     
     @State private var ChatContent : [String] = []
     
+    
     var body: some View {
-        ScrollView(.vertical){
-            if ChatContent != []{
-                VStack{
-                    ForEach(0..<ChatContent.count, id: \.self) { index in
-                        Text(ChatContent[index])
+        HStack{
+            Text("智普AI GLM 4.5 Flash")
+                .font(.title2.bold())
+                .padding()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            
+            Spacer()
+            
+            Image(systemName: "eraser.fill")
+                .font(.title2.bold())
+                .padding()
+                .onTapGesture {
+                    ChatContent = []
+                }
+                
+        }
+        .background(Color(.secondarySystemBackground))
+        
+        GeometryReader{Proxy in
+            ScrollView(.vertical){
+                if ChatContent != []{
+                    VStack{
+                        
+                        ForEach(0..<ChatContent.count, id: \.self) { index in
+                            
+                            var isAI: Bool {
+                                return ChatContent[index].contains("<aiIdentifierForAPP?>")
+                            }
+                            
+                            VStack{
+                                
+                                Text(removeIdentifier(str:ChatContent[index]))
+                                    .padding()
+                                    .foregroundColor(.white)
+                                    .textSelection(.enabled)
+                                    .background{
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(isAI ? Color(.systemGray2).gradient : Color(.blue).gradient)
+                                    }
+                            }.frame(maxWidth: .infinity, alignment: isAI ? .leading : .trailing)
+                            
+                        }
+                        
+                    }.padding()
+                }else{
+                    VStack{
+                        Image("AI_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .cornerRadius(.infinity)
+                            .shadow(color: colorScheme == .light ? Color(.systemGray) : .clear, radius: colorScheme == .light ? 6 : 0)
                             .padding()
-                            .foregroundColor(.white)
-                    }.background{
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(.blue.gradient)
+                        
+                        Text("您好!")
+                            .font(.title.bold())
+                        Text("我是 智普AI GLM 4.5 Flash")
+                            .font(.title.bold())
                     }
-                }.padding()
+                    .frame(minHeight: Proxy.size.height)
+                    .frame(maxWidth: .infinity)
+                }
             }
         }
         
@@ -34,6 +86,7 @@ struct ContentView: View {
         
         VStack {
             TextField("你想問什麼？",text: $question)
+                .submitLabel(.send)
                 .frame(maxWidth: .infinity)
                 .frame(height: 60)
                 .padding(.horizontal)
@@ -42,29 +95,36 @@ struct ContentView: View {
                 .onSubmit {
                     print(question)
                     
-                    ChatContent.append(question)
+                    ChatContent.append("<userIdentifierForAPP?>\(removeIdentifier(str: question))")
                     
                     print("loading")
                     
-                    ChatContent.append("思考中...")
-                    // 使用示例（修正错误处理）
-                    OpenRouterClient.shared.sendRequest(prompt: question, apiKey: apiKey) { result in
+                    ChatContent.append("<aiIdentifierForAPP?>思考中...")
+                    
+                    callAIModel(oldPrompt:String(describing: ChatContent),prompt: question) { result in
                         switch result {
                         case .success(let response):
-                            print("成功：\(response)")
-                            ChatContent[ChatContent.count - 1] = response
+                            print("AI响应: \(response)")
+                            ChatContent[ChatContent.count - 1] = "<aiIdentifierForAPP?>\(response)"
                         case .failure(let error):
-                            print("错误：\(error.localizedDescription)")
+                            print("发生错误: \(error.localizedDescription)")
+                            ChatContent[ChatContent.count - 1] = "<aiIdentifierForAPP?>\(error.localizedDescription)"
                         }
                     }
                     
                     question = ""
 
                 }
-        }.padding()
+        }
+        .padding()
         
         
         
+    }
+    
+    
+    private func removeIdentifier(str:String) -> String{
+        return str.replacingOccurrences(of: "<aiIdentifierForAPP?>", with: "").replacingOccurrences(of: "<userIdentifierForAPP?>", with: "")
     }
 }
 
