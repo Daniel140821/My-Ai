@@ -44,7 +44,7 @@ func callAIModel(role:String,oldPrompt:String,prompt: String, completion: @escap
         }
         
         guard let data = data else {
-            completion(.failure(NSError(domain: "NoData", code: -3, userInfo: [NSLocalizedDescriptionKey: "未收到响应数据"])))
+            completion(.failure(NSError(domain: "NoData", code: -3, userInfo: [NSLocalizedDescriptionKey: "未收到響應數據"])))
             return
         }
         
@@ -57,7 +57,7 @@ func callAIModel(role:String,oldPrompt:String,prompt: String, completion: @escap
                let content = message["content"] as? String {
                 completion(.success(content))
             } else {
-                completion(.failure(NSError(domain: "InvalidResponse", code: -4, userInfo: [NSLocalizedDescriptionKey: "无法解析API响应"])))
+                completion(.failure(NSError(domain: "InvalidResponse", code: -4, userInfo: [NSLocalizedDescriptionKey: "無法解析API響應"])))
             }
         } catch {
             completion(.failure(error))
