@@ -14,14 +14,46 @@ struct ContentView: View {
     
     @State private var ChatContent : [String] = []
     
+    @State private var AIModel : String = "智普AI GLM 4.5 Flash"
     
     var body: some View {
         HStack{
-            Text("智普AI GLM 4.5 Flash")
-                .font(.title2.bold())
-                .padding()
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
+            
+            Menu(AIModel) {
+                
+                Button {
+                    AIModel = "智普AI GLM 4.5 Flash"
+                } label: {
+                    Label {
+                        Text("智普AI GLM 4.5 Flash")
+                    } icon: {
+                        if AIModel == "智普AI GLM 4.5 Flash"{
+                            Image(systemName: "checkmark")
+                        }
+                    }
+
+                }
+                
+                Button {
+                    AIModel = "豹豹AI"
+                } label: {
+                    Label {
+                        Text("豹豹AI")
+                    } icon: {
+                        if AIModel == "豹豹AI"{
+                            Image(systemName: "checkmark")
+                        }
+                    }
+
+                }
+                
+            }
+            .foregroundColor(Color(.label))
+            .font(.title2.bold())
+            .padding()
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+                
             
             Spacer()
             
@@ -63,7 +95,7 @@ struct ContentView: View {
                     }.padding()
                 }else{
                     VStack{
-                        Image("AI_icon")
+                        Image(AIModel == "智普AI GLM 4.5 Flash" ? "AI_icon" : "CatAI_icon")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 100, height: 100)
@@ -73,7 +105,7 @@ struct ContentView: View {
                         
                         Text("您好!")
                             .font(.title.bold())
-                        Text("我是 智普AI GLM 4.5 Flash")
+                        Text("我是 \(AIModel)")
                             .font(.title.bold())
                     }
                     .frame(minHeight: Proxy.size.height)
@@ -101,7 +133,7 @@ struct ContentView: View {
                     
                     ChatContent.append("<aiIdentifierForAPP?>思考中...")
                     
-                    callAIModel(oldPrompt:String(describing: ChatContent),prompt: question) { result in
+                    callAIModel(role:AIModel,oldPrompt:String(describing: ChatContent),prompt: question) { result in
                         switch result {
                         case .success(let response):
                             print("AI响应: \(response)")
@@ -117,7 +149,9 @@ struct ContentView: View {
                 }
         }
         .padding()
-        
+        .onChange(of: AIModel) {
+            ChatContent = []
+        }
         
         
     }
