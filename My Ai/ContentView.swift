@@ -88,8 +88,8 @@ struct ContentView: View {
                                         RoundedRectangle(cornerRadius: 20)
                                             .fill(isAI ? Color(.systemGray2).gradient : Color(.blue).gradient)
                                     }
-                            }.frame(maxWidth: .infinity, alignment: isAI ? .leading : .trailing)
-                            
+                            }
+                            .frame(maxWidth: .infinity, alignment: isAI ? .leading : .trailing)
                         }
                         
                     }.padding()
@@ -111,17 +111,18 @@ struct ContentView: View {
                     .frame(minHeight: Proxy.size.height)
                     .frame(maxWidth: .infinity)
                 }
-            }
+            }.animation(.easeInOut, value: ChatContent)
         }
         
         Spacer()
         
         VStack {
             TextField("你想問什麼？",text: $question)
+                .disabled(ChatContent.last == "<aiIdentifierForAPP?>思考中...")
+                .padding(.horizontal)
                 .submitLabel(.send)
                 .frame(maxWidth: .infinity)
                 .frame(height: 60)
-                .padding(.horizontal)
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(.infinity)
                 .onSubmit {
@@ -148,12 +149,10 @@ struct ContentView: View {
 
                 }
         }
-        .padding()
+        .padding(.horizontal)
         .onChange(of: AIModel) {
             ChatContent = []
         }
-        
-        
     }
     
     
