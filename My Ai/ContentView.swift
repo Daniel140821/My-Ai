@@ -153,7 +153,7 @@ struct ContentView: View {
 
                 }
         }
-        .padding(.horizontal)
+        .padding()
         .onChange(of: AIModel) {
             ChatContent = []
         }
