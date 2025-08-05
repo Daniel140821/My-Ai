@@ -121,7 +121,7 @@ struct ContentView: View {
         Spacer()
         
         VStack {
-            TextField("你想問什麼？",text: $question)
+            TextField("你想問些什麼？",text: $question)
                 .disabled(ChatContent.last == "<aiIdentifierForAPP?>思考中...")
                 .padding(.horizontal)
                 .submitLabel(.send)
