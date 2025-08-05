@@ -18,9 +18,7 @@ struct ContentView: View {
     
     var body: some View {
         HStack{
-            
-            Menu(AIModel) {
-                
+            Menu {
                 Button {
                     AIModel = "智普AI GLM 4.5 Flash"
                 } label: {
@@ -46,7 +44,13 @@ struct ContentView: View {
                     }
 
                 }
-                
+            } label: {
+                Label {
+                    Text("\(AIModel)")
+                } icon: {
+                    Image(systemName: "chevron.down")
+                }
+
             }
             .foregroundColor(Color(.label))
             .font(.title2.bold())
